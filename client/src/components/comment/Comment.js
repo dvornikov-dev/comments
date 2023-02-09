@@ -1,4 +1,5 @@
 import { Component } from "react";
+import avatar from "../../resources/blank.png";
 import "./comment.css";
 
 class Comment extends Component {
@@ -12,7 +13,7 @@ class Comment extends Component {
               <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
                 <img
                   className="mr-2 w-6 h-6 rounded-full"
-                  src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
+                  src={avatar}
                   alt="Michael Gough"
                 />
                 {name}
