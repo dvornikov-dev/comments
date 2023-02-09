@@ -14,10 +14,9 @@ class App extends Component {
               Discussion (20)
             </h2>
           </div>
-
           <CommentForm />
           <SortPanel />
-          <CommentList comments={[1, 2, 3]} />
+          <CommentList />
         </div>
       </section>
     );

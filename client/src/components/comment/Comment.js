@@ -3,6 +3,7 @@ import "./comment.css";
 
 class Comment extends Component {
   render() {
+    const { id, name, email, body } = this.props;
     return (
       <>
         <article className="p-6 pl-0 mb-6 text-base bg-white rounded-lg dark:bg-gray-900">
@@ -14,7 +15,7 @@ class Comment extends Component {
                   src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
                   alt="Michael Gough"
                 />
-                Michael Gough
+                {name}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 <time
@@ -27,12 +28,7 @@ class Comment extends Component {
               </p>
             </div>
           </footer>
-          <p className="text-gray-500 dark:text-gray-400">
-            Very straight-to-point article. Really worth time reading. Thank
-            you! But tools are just the instruments for the UX designers. The
-            knowledge of the design tools are as important as the creation of
-            the design strategy.
-          </p>
+          <p className="text-gray-500 dark:text-gray-400">{body}</p>
           <div className="flex items-center mt-4 space-x-4">
             <button
               type="button"
