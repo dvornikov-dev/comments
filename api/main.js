@@ -1,3 +1,3 @@
 import staticServer from './server/static.js';
 
-staticServer(3000);
+staticServer(8000);
