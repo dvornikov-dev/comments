@@ -1,3 +1,3 @@
-import staticServer from './server/static.js';
+import server from './server/express.js';
 
-staticServer(8000);
+server(8000);

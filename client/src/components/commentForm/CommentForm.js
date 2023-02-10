@@ -1,10 +1,45 @@
 import { Component } from "react";
 
 class CommentForm extends Component {
+  state = {
+    username: "",
+    email: "",
+    homeUrl: "",
+    message: "",
+  };
+
+  onUsernameChange = (e) => {
+    this.setState({ username: e.target.value });
+  };
+
+  onEmailChange = (e) => {
+    this.setState({ email: e.target.value });
+  };
+
+  onHomeUrlChange = (e) => {
+    this.setState({ homeUrl: e.target.value });
+  };
+
+  onMessageChange = (e) => {
+    this.setState({ message: e.target.value });
+  };
+
+  onSubmit = (e) => {
+    e.preventDefault();
+
+    fetch("http://localhost:8000/comment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify(this.state),
+    });
+  };
+
   render() {
     return (
       <>
-        <form className="mb-6">
+        <form className="mb-6" onSubmit={this.onSubmit}>
           <div className="flex flex-row mb-1">
             <div className="w-1/2">
               <label
@@ -20,6 +55,8 @@ class CommentForm extends Component {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="username"
                 required=""
+                value={this.state.username}
+                onChange={this.onUsernameChange}
               />
             </div>
             <div className="w-1/6"></div>
@@ -37,6 +74,8 @@ class CommentForm extends Component {
                 className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="name@company.com"
                 required=""
+                value={this.props.email}
+                onChange={this.onEmailChange}
               />
             </div>
           </div>
@@ -53,6 +92,8 @@ class CommentForm extends Component {
               id="homeUrl"
               className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="https://example.com"
+              value={this.state.homeUrl}
+              onChange={this.onHomeUrlChange}
             />
           </div>
           <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
@@ -138,14 +179,17 @@ class CommentForm extends Component {
             </div>
             <div className="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
               <label forhtml="editor" className="sr-only">
-                Publish post
+                Publish pcomment
               </label>
               <textarea
                 id="editor"
                 rows="8"
+                name="message"
                 className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
                 placeholder="Write an comment..."
                 required
+                value={this.state.message}
+                onChange={this.onMessageChange}
               ></textarea>
             </div>
           </div>

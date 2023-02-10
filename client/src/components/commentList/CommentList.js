@@ -2,6 +2,7 @@ import { Component } from "react";
 import Comment from "../comment/Comment";
 import Pagination from "../pagination/Pagination";
 import ApiService from "../../services/ApiService";
+import { io } from "socket.io-client";
 import "./commentList.css";
 
 class CommentList extends Component {
@@ -23,7 +24,22 @@ class CommentList extends Component {
 
   componentDidMount() {
     this.onRequest(this.state.offset);
+    const socket = io("ws://localhost:8000"); //TODO config var
+    socket.on("message", (message) =>
+      console.log("Message from server: ", message)
+    );
+    socket.on("update", this.onUpdate);
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
   }
+
+  onUpdate = (message) => {
+    console.log("update message");
+    this.onRequest(this.state.offset);
+  };
 
   onCommentsLoaded = ({ comments: newCommentsList, total }) => {
     if (this.state.offset !== 0) {
@@ -66,7 +82,6 @@ class CommentList extends Component {
 
   render() {
     const { comments, commentsEnded, isStart, total, currentPage } = this.state;
-    console.log(comments);
     const commentsList = comments.map((comment) => (
       <Comment {...comment} key={comment.id} />
     ));
