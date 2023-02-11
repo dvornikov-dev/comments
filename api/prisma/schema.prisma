@@ -20,7 +20,7 @@ model User {
 
 model Comment {
   id        Int       @id @default(autoincrement())
-  message   String
+  message   Json
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   parent    Comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
