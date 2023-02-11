@@ -4,15 +4,15 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import prismaService from '../services/prisma.service.js';
 import UserController from '../users/users.controller.js';
+import CommentController from '../comments/comments.controller.js';
 import 'dotenv/config';
+import errorMiddleware from '../middlewares/error.middleware.js';
 
 export default async (port) => {
   const app = express();
 
   app.use(cors());
   app.use(express.json());
-  const userController = new UserController();
-  app.use('/users', userController.router);
 
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
@@ -33,6 +33,11 @@ export default async (port) => {
     });
   });
 
+  const userController = new UserController(io);
+  app.use('/users', userController.router);
+  const commentsController = new CommentController(io);
+  app.use('/comments', commentsController.router);
+  app.use(errorMiddleware);
   await prismaService.connect();
 
   httpServer.listen(port, () =>
