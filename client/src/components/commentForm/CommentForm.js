@@ -1,12 +1,56 @@
 import { Component } from "react";
+import { Editor } from "react-draft-wysiwyg";
+import { convertToRaw, convertFromRaw, EditorState } from "draft-js";
+import draftToHtml from "draftjs-to-html";
+import ApiService from "../../services/ApiService";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import "./commentForm.css";
+
+const content = {
+  entityMap: {},
+  blocks: [
+    {
+      key: "637gr",
+      text: "",
+      type: "unstyled",
+      depth: 0,
+      inlineStyleRanges: [],
+      entityRanges: [],
+      data: {},
+    },
+  ],
+};
+
+const emptyEditor = EditorState.createWithContent(convertFromRaw(content));
+
+const toolbar = {
+  options: ["inline", "link"],
+  inline: {
+    inDropdown: false,
+    className: undefined,
+    component: undefined,
+    dropdownClassName: undefined,
+    options: ["bold", "italic", "monospace"],
+  },
+};
 
 class CommentForm extends Component {
   state = {
     username: "",
     email: "",
     homeUrl: "",
-    message: "",
+    editorState: emptyEditor,
+    error: {
+      username: "",
+      email: "",
+      homeUrl: "",
+      message: "",
+      file: "",
+      form: "",
+    },
   };
+
+  apiService = new ApiService();
 
   onUsernameChange = (e) => {
     this.setState({ username: e.target.value });
@@ -24,19 +68,67 @@ class CommentForm extends Component {
     this.setState({ message: e.target.value });
   };
 
-  onSubmit = (e) => {
-    e.preventDefault();
+  isEditorEmpty = () => {
+    const blocks = this.state.editorState.getCurrentContent().getBlockMap();
+    let text = "";
+    blocks.forEach((block) => {
+      text += block.getText();
+    });
+    return text.trim().length === 0;
+  };
 
-    fetch("http://localhost:8000/comment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json;charset=utf-8",
-      },
-      body: JSON.stringify(this.state),
+  onSubmit = async (e) => {
+    e.preventDefault();
+    this.setState({ error: {} });
+    if (this.isEditorEmpty()) {
+      this.setState({
+        error: {
+          message: "Message is missing",
+        },
+      });
+      return;
+    }
+    const { editorState } = this.state;
+
+    const comment = {
+      username: this.state.username,
+      email: this.state.email,
+      homeUrl: this.state.homeUrl ? this.state.homeUrl : undefined,
+      message: convertToRaw(editorState.getCurrentContent()),
+    };
+
+    const res = await this.apiService.sendComment(comment);
+    if (!res) {
+      this.setState({ error: { form: "Unexpected error" } });
+    }
+    if (res.errors) {
+      let errorsState = {};
+      res.errors.forEach((error) => {
+        errorsState[error.param] = error.msg;
+      });
+      console.log(errorsState);
+      this.setState({ error: errorsState });
+    }
+    if (res.success) {
+      this.setState({
+        username: "",
+        email: "",
+        homeUrl: "",
+        editorState: emptyEditor,
+      });
+    }
+  };
+
+  onEditorStateChange = (editorState) => {
+    // const a = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+    // console.log(a);
+    this.setState({
+      editorState,
     });
   };
 
   render() {
+    const { error, editorState } = this.state;
     return (
       <>
         <form className="mb-6" onSubmit={this.onSubmit}>
@@ -44,17 +136,21 @@ class CommentForm extends Component {
             <div className="w-1/2">
               <label
                 forhtml="username"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className={`block ${
+                  error.username ? "text-red-500" : "text-gray-900"
+                } mb-2 text-sm font-medium dark:text-white`}
               >
-                Username
+                {error.username ? error.username : "Username"}
               </label>
               <input
                 type="username"
                 name="username"
                 id="username"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className={`bg-gray-50 border ${
+                  error.username ? "border-red-500" : "border-gray-300"
+                } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 placeholder="username"
-                required=""
+                required
                 value={this.state.username}
                 onChange={this.onUsernameChange}
               />
@@ -63,18 +159,22 @@ class CommentForm extends Component {
             <div className="w-1/2">
               <label
                 forhtml="email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className={`block ${
+                  error.email ? "text-red-500" : "text-gray-900"
+                } mb-2 text-sm font-medium dark:text-white`}
               >
-                Your email
+                {error.email ? error.email : "Email"}
               </label>
               <input
                 type="email"
                 name="email"
                 id="email"
-                className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className={`bg-gray-50 border ${
+                  error.email ? "border-red-500" : "border-gray-300"
+                } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 placeholder="name@company.com"
-                required=""
-                value={this.props.email}
+                required
+                value={this.state.email}
                 onChange={this.onEmailChange}
               />
             </div>
@@ -82,117 +182,58 @@ class CommentForm extends Component {
           <div className="mb-3">
             <label
               forhtml="homeUrl"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              className={`block ${
+                error.homeUrl ? "text-red-500" : "text-gray-900"
+              } mb-2 text-sm font-medium dark:text-white`}
             >
-              Home URL
+              {error.homeUrl ? error.homeUrl : "Home URL"}
             </label>
             <input
               type="url"
               name="homeUrl"
               id="homeUrl"
-              className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className={`border ${
+                error.homeUrl ? "border-red-500" : "border-gray-300"
+              } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
               placeholder="https://example.com"
               value={this.state.homeUrl}
               onChange={this.onHomeUrlChange}
             />
           </div>
-          <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-            <div className="flex items-center justify-between px-3 py-2 border-b dark:border-gray-600">
-              <div className="flex flex-wrap items-center divide-gray-200 sm:divide-x dark:divide-gray-600">
-                <div className="flex items-center space-x-1 sm:pr-4">
-                  <button
-                    type="button"
-                    className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                  >
-                    <i className="w-5 h-5 mdi mdi-format-bold"></i>
-                    <span className="sr-only">Bold</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                  >
-                    <i className="mdi mdi-format-italic"></i>
-                    <span className="sr-only">Italic</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2.3"
-                      stroke="currentColor"
-                      className="w-4 h-4"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"
-                      />
-                    </svg>
-                    <span className="sr-only">Link</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                    <span className="sr-only">Format code</span>
-                  </button>
-                </div>
-                <div className="flex flex-wrap items-center space-x-1 sm:pl-4">
-                  <button
-                    type="button"
-                    className="p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                    <span className="sr-only">Attach file</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
-              <label forhtml="editor" className="sr-only">
-                Publish pcomment
-              </label>
-              <textarea
-                id="editor"
-                rows="8"
-                name="message"
-                className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
-                placeholder="Write an comment..."
-                required
-                value={this.state.message}
-                onChange={this.onMessageChange}
-              ></textarea>
-            </div>
+          <div className={`text-red-500 ${error.message ? "" : "hidden"}`}>
+            {error.message}
           </div>
+          <Editor
+            editorState={editorState}
+            wrapperClassName={`mb-3 ${
+              error.message ? "border border-red-500" : ""
+            }`}
+            editorClassName="editor"
+            onEditorStateChange={this.onEditorStateChange}
+            toolbar={toolbar}
+          />
+          <div className="mb-3">
+            <label>
+              <input
+                type="file"
+                className="text-sm text-grey-500 file:mr-5 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:cursor-pointer hover:file:bg-amber-50 hover:file:text-amber-700"
+              />
+            </label>
+            <p
+              className={`mt-1 text-sm ${
+                error.file ? "text-red-500" : "text-gray-500"
+              } dark:text-gray-300`}
+              id="file_input_help"
+            >
+              {error.file
+                ? error.file
+                : "PNG, JPG or GIF (MAX. 320x240px). TXT"}
+            </p>
+          </div>
+          <div className={error.form ? `text-red-500` : "hidden"}>
+            {error.form}
+          </div>
+
           <button
             type="submit"
             className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800"
