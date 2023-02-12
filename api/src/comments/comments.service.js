@@ -21,14 +21,21 @@ export default class CommentService {
     return res;
   }
 
-  async getAllComments(limit, offset, sortField, sortType) {
+  async getRootComments(limit, offset, sortField, sortType) {
     const commentsDto = {
       limit: limit ? Number(limit) : undefined,
       offset: offset ? Number(offset) : undefined,
       sortField,
       sortType,
     };
-    const res = await this.commentRepository.getAllComments(commentsDto);
-    return res;
+    const res = await this.commentRepository.getRootComments(commentsDto);
+
+    return { comments: res, count: res.length };
+  }
+
+  async getChildsComments(parentId) {
+    const res = await this.commentRepository.getCildsComments(Number(parentId));
+
+    return { comments: res };
   }
 }

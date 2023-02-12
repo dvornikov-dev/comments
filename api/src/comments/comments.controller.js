@@ -25,7 +25,7 @@ export default class CommentConroller extends BaseController {
       {
         path: '/',
         method: 'get',
-        func: this.getAllComments,
+        func: this.getRootComments,
         middlewares: [
           check('limit').optional().isInt(),
           check('offset').optional().isInt(),
@@ -35,6 +35,14 @@ export default class CommentConroller extends BaseController {
           check('sortType')
             .optional()
             .matches(/^[a-zA-Z]+$/, 'i'),
+        ],
+      },
+      {
+        path: '/childs',
+        method: 'get',
+        func: this.getChildsComments,
+        middlewares: [
+          check('parentId').isInt(),
         ],
       },
     ];
@@ -56,14 +64,14 @@ export default class CommentConroller extends BaseController {
     }
   };
 
-  getAllComments = async (req, res, next) => {
+  getRootComments = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       next(ApiExeption.BadRequest('Validation Error', errors.array()));
     } else {
       const { limit, offset, sortField, sortType } = req.query;
       try {
-        const result = await this.commentsService.getAllComments(
+        const result = await this.commentsService.getRootComments(
           limit,
           offset,
           sortField,
@@ -75,4 +83,19 @@ export default class CommentConroller extends BaseController {
       }
     }
   };
+
+  getChildsComments = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      next(ApiExeption.BadRequest('Validation Error', errors.array()));
+    } else {
+      const { parentId } = req.query;
+      try {
+        const result = await this.commentsService.getChildsComments(parentId);
+        this.ok(res, result);
+      } catch (e) {
+        next(e);
+      }
+    }
+  }
 }
