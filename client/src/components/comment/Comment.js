@@ -1,13 +1,44 @@
 import { Component } from "react";
 import avatar from "../../resources/blank.png";
+import draftToHtml from "draftjs-to-html";
+import ApiService from "../../services/ApiService";
+import CommentList from "../commentList/CommentList";
 import "./comment.css";
 
 class Comment extends Component {
+  state = {
+    childComments: [],
+  };
+
+  apiService = new ApiService();
+
+  componentDidMount() {
+    const { id } = this.props;
+    this.apiService.getChildComments(id).then(this.onCommentsLoaded);
+  }
+
+  onCommentsLoaded = ({ comments }) => {
+    this.setState({ childComments: comments });
+  };
+
   render() {
-    const { id, name, email, body } = this.props;
+    const { id, message, user, createdAt } = this.props;
+    const { childComments } = this.state;
+    const date = new Date(createdAt);
+    const options = {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    const formattedDate = date.toLocaleString("en-US", options);
+
+    const messageHtml = draftToHtml(JSON.parse(message));
+
     return (
       <>
-        <article className="p-6 pl-0 mb-6 text-base bg-white rounded-lg dark:bg-gray-900">
+        <article className="p-6 pb-1 pl-0 ml-3 text-base bg-white rounded-lg dark:bg-gray-900">
           <footer className="flex justify-between items-center mb-2">
             <div className="flex items-center">
               <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
@@ -16,20 +47,36 @@ class Comment extends Component {
                   src={avatar}
                   alt="Michael Gough"
                 />
-                {name}
+                {user.homeUrl ? (
+                  <a
+                    href={user.homeUrl}
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  >
+                    {user.username}
+                  </a>
+                ) : (
+                  user.username
+                )}
+                &nbsp;&nbsp;
+                <a
+                  href={`mailto:${user.email}`}
+                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                >
+                  {user.email}
+                </a>
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                <time
-                  pubdate="true"
-                  dateTime="2022-02-08"
-                  title="February 8th, 2022"
-                >
-                  Feb. 8, 2022
+                <time pubdate="true" dateTime={createdAt} title={formattedDate}>
+                  {formattedDate}
                 </time>
               </p>
             </div>
           </footer>
-          <p className="text-gray-500 dark:text-gray-400">{body}</p>
+          <div
+            className="break-all"
+            dangerouslySetInnerHTML={{ __html: messageHtml }}
+          ></div>
+
           <div className="flex items-center mt-4 space-x-4">
             <button
               type="button"
@@ -53,6 +100,11 @@ class Comment extends Component {
               Reply
             </button>
           </div>
+          {childComments.length > 0 && (
+            <div className="" id="nested-comments">
+              <CommentList comments={childComments} />
+            </div>
+          )}
         </article>
       </>
     );

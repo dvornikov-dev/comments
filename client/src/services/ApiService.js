@@ -1,5 +1,5 @@
 class ApiService {
-  _apiBase = "https://jsonplaceholder.typicode.com/";
+  _apiBase = "http://localhost:8000/";
 
   getResource = async (url, options) => {
     let res = await fetch(url, options);
@@ -10,11 +10,19 @@ class ApiService {
     return await res.json();
   };
 
-  getAllComments = async (offset = 0) => {
+  getRootComments = async (offset = 0) => {
+    //TODO limit config
     const res = await this.getResource(
-      `${this._apiBase}comments?_limit=25&_start=${offset}`
+      `${this._apiBase}comments?limit=25&offset=${offset}`
     );
-    return { comments: res, total: 500 };
+    return res;
+  };
+
+  getChildComments = async (parentId) => {
+    const res = await this.getResource(
+      `${this._apiBase}comments/childs?parentId=${parentId}`
+    );
+    return res;
   };
 
   sendComment = async (comment) => {

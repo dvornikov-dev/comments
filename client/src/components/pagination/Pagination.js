@@ -1,19 +1,57 @@
 import { Component } from "react";
 
 class Pagination extends Component {
-  render() {
-    const { from, to, total, onPrev, onNext, commentsEnded, isStart } =
+  state = {
+    currentPage: 1,
+  };
+
+  onPrev = () => {
+    const { count, offset, onSetIsStart, onSetCommentsEnded, onRequest } =
       this.props;
+    const { currentPage } = this.state;
+    let newOffset = offset - 25;
+    let to = currentPage * 25 - 25;
+    this.setState(({ currentPage }) => ({ currentPage: currentPage - 1 }));
+    if (newOffset <= 0) {
+      onSetIsStart(true);
+    }
+    if (to <= count) {
+      onSetCommentsEnded(false);
+    }
+    console.log(newOffset, to, currentPage);
+    onRequest(newOffset);
+  };
+  onNext = () => {
+    const { count, offset, commentsEnded, onSetCommentsEnded, onRequest } =
+      this.props;
+    const { currentPage } = this.state;
+    let newOffset = offset + 25;
+    let to = currentPage * 25 + 25;
+    if (to >= count) {
+      onSetCommentsEnded(true);
+    }
+    if (!commentsEnded) {
+      this.setState(({ currentPage }) => ({ currentPage: currentPage + 1 }));
+      onRequest(newOffset);
+    }
+  };
+
+  render() {
+    const { commentsLength, commentsEnded, isStart, count } = this.props;
+    const { currentPage } = this.state;
+    const from = currentPage * 25 - 25;
+    const to =
+      currentPage * 25 >= commentsLength ? commentsLength : currentPage * 25;
     return (
       <div className="py-2">
         <div>
           <p className="text-sm text-gray-700">
             Showing
-            <span className="font-medium"> {from} </span>
+            <span className="font-medium"> {from + 1} </span>
             to
             <span className="font-medium"> {to} </span>
             of
-            <span className="font-medium"> {total} </span>
+            <span className="font-medium"> {count} </span>
             results
           </p>
         </div>
@@ -25,7 +63,7 @@ class Pagination extends Component {
           >
             <a
               onClick={() => {
-                onPrev();
+                this.onPrev();
               }}
               href="#blank"
               className={`relative ${
@@ -37,7 +75,7 @@ class Pagination extends Component {
 
             <a
               onClick={() => {
-                onNext();
+                this.onNext();
               }}
               href="#blank"
               className={`relative ${
