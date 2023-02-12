@@ -24,7 +24,7 @@ model Comment {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   parent    Comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
-  children  Comment[] @relation("ParentChild")
+  childrens Comment[] @relation("ParentChild")
   parentId  Int?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt

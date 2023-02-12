@@ -10,6 +10,8 @@ services:
       POSTGRES_DB: "example"
       POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "password"
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
   server:
     build: ./api
     restart: always
@@ -30,5 +32,19 @@ services:
     volumes:
       - /app/node_modules
       - ./client:/app
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+volumes:
+  local_pgdata:
+  pgadmin-data:
     
     
