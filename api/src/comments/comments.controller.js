@@ -20,6 +20,7 @@ export default class CommentConroller extends BaseController {
           body('email').isEmail().withMessage('Email is invalid'),
           body('homeUrl').optional().isURL().withMessage('Url is invalid'),
           body('message').not().isEmpty().withMessage('Message is required'),
+          body('parentId').optional().isInt().withMessage('Parent Id is invalid'),
         ],
       },
       {

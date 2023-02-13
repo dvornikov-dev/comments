@@ -4,7 +4,7 @@ export default class CommentService {
     this.commentRepository = new CommentRepository();
   }
 
-  async create({ username, email, homeUrl, message }) {
+  async create({ username, email, homeUrl, message, parentId }) {
     // каптча
     // пытаемся достать токен
     // если нет токена ищем пользователя
@@ -14,7 +14,7 @@ export default class CommentService {
     const commentDto = {
       message: JSON.stringify(message),
       userId: 1,
-      parentId: null,
+      parentId: parentId,
     };
 
     const res = await this.commentRepository.create(commentDto);
@@ -29,8 +29,8 @@ export default class CommentService {
       sortType,
     };
     const res = await this.commentRepository.getRootComments(commentsDto);
-
-    return { comments: res, count: res.length };
+    const count = await this.commentRepository.getCountAllRootComments(commentsDto);
+    return { comments: res, count };
   }
 
   async getChildsComments(parentId) {

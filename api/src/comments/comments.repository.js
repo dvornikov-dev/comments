@@ -11,6 +11,14 @@ export default class CommentRepository {
     });
   }
 
+  async getCountAllRootComments() {
+    return this.prismaService.client.comment.count({
+      where: {
+        parentId: null
+      }
+    });
+  }
+
   async getRootComments({ limit, offset, sortField, sortType }) {
     const types = {
       desc: 'desc',
@@ -21,6 +29,7 @@ export default class CommentRepository {
       email: 'email',
     };
     const commentFileds = {
+      id: 'createdAt',
       createdAt: 'createdAt',
     };
 
@@ -74,6 +83,9 @@ export default class CommentRepository {
     return this.prismaService.client.comment.findMany({
       where: {
         parentId,
+      },
+      orderBy: {
+        createdAt: 'asc'
       },
       select: {
         id: true,
