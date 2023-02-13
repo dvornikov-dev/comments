@@ -68,7 +68,7 @@ class App extends Component {
       });
     }
 
-    const totalPages = Math.ceil(count / 25);
+    const totalPages = Math.ceil(count / this.apiService.LIMIT);
     const { currentPage } = this.state;
 
     this.setState({
@@ -137,6 +137,7 @@ class App extends Component {
             isStart={isStart}
             commentsEnded={commentsEnded}
             offset={offset}
+            LIMIT={this.apiService.LIMIT}
             onSetIsStart={this.onSetIsStart}
             onSetCommentsEnded={this.onSetCommentsEnded}
             onRequest={this.onRequest}

@@ -1,6 +1,8 @@
 class ApiService {
   _apiBase = "http://localhost:8000/";
 
+  LIMIT = 25;
+
   getResource = async (url, options) => {
     let res = await fetch(url, options);
     if (res.status === 500) {
@@ -13,7 +15,7 @@ class ApiService {
   getRootComments = async (offset = 0, sortField = "id", sortType = "desc") => {
     //TODO limit config
     const res = await this.getResource(
-      `${this._apiBase}comments?limit=25&offset=${offset}&sortField=${sortField}&sortType=${sortType}`
+      `${this._apiBase}comments?limit=${this.LIMIT}&offset=${offset}&sortField=${sortField}&sortType=${sortType}`
     );
     return res;
   };

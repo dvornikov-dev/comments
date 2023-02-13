@@ -10,15 +10,15 @@ class Pagination extends Component {
       count,
       offset,
       onSetIsStart,
-      onSetCommentsEnded,
       onRequest,
       onCurrentPageChange,
       currentPage,
+      LIMIT,
     } = this.props;
 
-    const totalPages = Math.ceil(count / 25);
+    const totalPages = Math.ceil(count / LIMIT);
 
-    let newOffset = offset - 25;
+    let newOffset = offset - LIMIT;
     onRequest(newOffset);
 
     onCurrentPageChange(currentPage - 1);
@@ -34,11 +34,12 @@ class Pagination extends Component {
       onRequest,
       onCurrentPageChange,
       currentPage,
+      LIMIT,
     } = this.props;
 
-    const totalPages = Math.ceil(count / 25);
+    const totalPages = Math.ceil(count / LIMIT);
 
-    let newOffset = offset + 25;
+    let newOffset = offset + LIMIT;
     onRequest(newOffset);
 
     onCurrentPageChange(currentPage + 1);
@@ -49,9 +50,9 @@ class Pagination extends Component {
   };
 
   render() {
-    const { commentsEnded, isStart, count, currentPage } = this.props;
+    const { commentsEnded, isStart, count, currentPage, LIMIT } = this.props;
 
-    const totalPages = Math.ceil(count / 25);
+    const totalPages = Math.ceil(count / LIMIT);
 
     return (
       <div className="py-2">
