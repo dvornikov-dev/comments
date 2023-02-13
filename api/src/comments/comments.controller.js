@@ -58,9 +58,14 @@ export default class CommentConroller extends BaseController {
     if (!errors.isEmpty()) {
       next(ApiExeption.BadRequest('Validation Error', errors.array()));
     } else {
-      const result = await this.commentsService.create(req.body); //TODO: try catch
-      console.log(result);
-      // если коммент создался то делаем емит на апдейт.
+      try {
+        const result = await this.commentsService.create(req.body);
+        if(result) {
+          this.io.emit("update", "update");
+        }
+      } catch (e) {
+        next(e);
+      }
       this.ok(res, { success: true });
     }
   };
