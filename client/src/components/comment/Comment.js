@@ -16,7 +16,8 @@ class Comment extends Component {
   apiService = new ApiService();
 
   componentDidMount() {
-    const { id } = this.props;
+    const { id, local } = this.props;
+    if (local) return;
     this.apiService.getChildComments(id).then(this.onCommentsLoaded);
   }
 
@@ -28,12 +29,20 @@ class Comment extends Component {
 
   setChildrenHidden = (childrenHidden) => this.setState({ childrenHidden });
 
-  onCommentReply = () => {};
+  updateChildrens = () => {
+    const { id } = this.props;
+    this.apiService.getChildComments(id).then(this.onCommentsLoaded);
+  };
+
+  setChildComments = (childComments) => {
+    this.setState({ childComments });
+  };
 
   render() {
     const { id, message, user, createdAt } = this.props;
     const { childComments, isReplying, childrenHidden } = this.state;
     const date = new Date(createdAt);
+
     const options = {
       month: "short",
       day: "numeric",
@@ -114,12 +123,15 @@ class Comment extends Component {
             <div className="mt-1 ml-3">
               <CommentForm
                 autoFocus
-                onSubmit={this.onCommentReply}
                 parentId={id}
+                setIsReplying={this.setIsReplying}
+                updateChildrens={this.updateChildrens}
+                comments={childComments}
+                setComments={this.setChildComments}
               />
             </div>
           )}
-          {childComments.length > 0 && (
+          {childComments?.length > 0 && (
             <>
               <button
                 className={`flex items-center ${
@@ -131,7 +143,7 @@ class Comment extends Component {
               </button>
               <div
                 className={`transition-opacity duration-300 ease-in-out ${
-                  childrenHidden ? "hidden" : ""
+                  !childrenHidden || isReplying ? "" : "hidden"
                 }`}
                 id="nested-comments"
               >

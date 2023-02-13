@@ -5,7 +5,6 @@ import SortPanel from "../sortPanel/sortPanel";
 import ApiService from "../../services/ApiService";
 import Pagination from "../pagination/Pagination";
 import { io } from "socket.io-client";
-import wsService from "../../services/WsService";
 import "./App.css";
 
 class App extends Component {
@@ -34,12 +33,8 @@ class App extends Component {
 
   componentDidMount() {
     this.onRequest(this.state.offset);
-    const socket = io("ws://localhost:8000"); //TODO config var
-    socket.on("message", (message) =>
-      console.log("Message from server: ", message)
-    );
+    const socket = io(this.apiService.wsUrl); //TODO config var
     socket.on("update", this.onUpdate);
-
     return () => {
       socket.off("connect");
       socket.off("disconnect");
@@ -100,6 +95,10 @@ class App extends Component {
     }));
   };
 
+  setComments = (comments) => {
+    this.setState({ comments });
+  };
+
   render() {
     const {
       comments,
@@ -121,7 +120,12 @@ class App extends Component {
               Discussion (20)
             </h2>
           </div>
-          <CommentForm />
+          <CommentForm
+            comments={comments}
+            offset={offset}
+            updateComments={this.onRequest}
+            setComments={this.setComments}
+          />
           <SortPanel
             toggleSort={this.toggleSort}
             toggleSortType={this.toggleSortType}
@@ -131,7 +135,7 @@ class App extends Component {
             sortField={sortField}
             sortType={sortType}
           />
-          <CommentList comments={comments} />
+          <CommentList comments={comments} offset={offset} />
           <Pagination
             count={count}
             isStart={isStart}
