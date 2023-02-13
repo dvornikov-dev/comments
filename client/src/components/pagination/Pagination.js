@@ -6,53 +6,61 @@ class Pagination extends Component {
   };
 
   onPrev = () => {
-    const { count, offset, onSetIsStart, onSetCommentsEnded, onRequest } =
-      this.props;
-    const { currentPage } = this.state;
+    const {
+      count,
+      offset,
+      onSetIsStart,
+      onSetCommentsEnded,
+      onRequest,
+      onCurrentPageChange,
+      currentPage,
+    } = this.props;
+
+    const totalPages = Math.ceil(count / 25);
+
     let newOffset = offset - 25;
-    let to = currentPage * 25 - 25;
-    this.setState(({ currentPage }) => ({ currentPage: currentPage - 1 }));
-    if (newOffset <= 0) {
+    onRequest(newOffset);
+
+    onCurrentPageChange(currentPage - 1);
+    if (currentPage - 1 <= totalPages) {
       onSetIsStart(true);
     }
-    if (to <= count) {
-      onSetCommentsEnded(false);
-    }
-    console.log(newOffset, to, currentPage);
-    onRequest(newOffset);
   };
   onNext = () => {
-    const { count, offset, commentsEnded, onSetCommentsEnded, onRequest } =
-      this.props;
-    const { currentPage } = this.state;
+    const {
+      count,
+      offset,
+      onSetCommentsEnded,
+      onRequest,
+      onCurrentPageChange,
+      currentPage,
+    } = this.props;
+
+    const totalPages = Math.ceil(count / 25);
+
     let newOffset = offset + 25;
-    let to = currentPage * 25 + 25;
-    if (to >= count) {
+    onRequest(newOffset);
+
+    onCurrentPageChange(currentPage + 1);
+
+    if (currentPage + 1 >= totalPages) {
       onSetCommentsEnded(true);
-    }
-    if (!commentsEnded) {
-      this.setState(({ currentPage }) => ({ currentPage: currentPage + 1 }));
-      onRequest(newOffset);
     }
   };
 
   render() {
-    const { commentsLength, commentsEnded, isStart, count } = this.props;
-    const { currentPage } = this.state;
-    const from = currentPage * 25 - 25;
-    const to =
-      currentPage * 25 >= commentsLength ? commentsLength : currentPage * 25;
+    const { commentsEnded, isStart, count, currentPage } = this.props;
+
+    const totalPages = Math.ceil(count / 25);
+
     return (
       <div className="py-2">
         <div>
           <p className="text-sm text-gray-700">
-            Showing
-            <span className="font-medium"> {from + 1} </span>
-            to
-            <span className="font-medium"> {to} </span>
+            Page
+            <span className="font-medium"> {currentPage} </span>
             of
-            <span className="font-medium"> {count} </span>
-            results
+            <span className="font-medium"> {totalPages} </span>
           </p>
         </div>
         <nav className="block"></nav>
