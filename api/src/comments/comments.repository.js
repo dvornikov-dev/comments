@@ -5,6 +5,20 @@ export default class CommentRepository {
     this.prismaService = prismaService;
   }
 
+  commentSelect = {
+    id: true,
+    message: true,
+    createdAt: true,
+    user: {
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        homeUrl: true,
+      },
+    },
+  };
+
   async create(commentDto) {
     return this.prismaService.client.comment.create({
       data: commentDto,
@@ -60,19 +74,7 @@ export default class CommentRepository {
       take: limit,
       skip: offset,
       orderBy,
-      select: {
-        id: true,
-        message: true,
-        createdAt: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            homeUrl: true,
-          },
-        },
-      },
+      select: this.commentSelect,
       where: {
         parentId: null,
       },
@@ -87,19 +89,7 @@ export default class CommentRepository {
       orderBy: {
         createdAt: 'asc'
       },
-      select: {
-        id: true,
-        message: true,
-        createdAt: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            homeUrl: true,
-          },
-        },
-      },
+      select: this.commentSelect,
     });
   }
 }
