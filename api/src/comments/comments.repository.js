@@ -28,8 +28,8 @@ export default class CommentRepository {
   async getCountAllRootComments() {
     return this.prismaService.client.comment.count({
       where: {
-        parentId: null
-      }
+        parentId: null,
+      },
     });
   }
 
@@ -87,7 +87,7 @@ export default class CommentRepository {
         parentId,
       },
       orderBy: {
-        createdAt: 'asc'
+        createdAt: 'asc',
       },
       select: this.commentSelect,
     });

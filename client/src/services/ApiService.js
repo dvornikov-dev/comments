@@ -36,6 +36,15 @@ class ApiService {
       body: JSON.stringify(comment),
     });
   };
+
+  getUser = async (accessToken) => {
+    return this.getResource(`${this._apiBase}users`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  };
 }
 
 export default ApiService;

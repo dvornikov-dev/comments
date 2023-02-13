@@ -1,24 +1,38 @@
 import CommentRepository from './comments.repository.js';
+import UserService from './../users/users.service.js';
+import TokenService from '../services/token.service.js';
+
 export default class CommentService {
   constructor() {
     this.commentRepository = new CommentRepository();
+    this.userService = new UserService();
+    this.tokenService = new TokenService();
   }
 
   async create({ username, email, homeUrl, message, parentId }) {
     // каптча
-    // пытаемся достать токен
-    // если нет токена ищем пользователя
-    // если пользователь есть возвращаем токен
-    // если нет то создаем и возвращаем токен
-    // создаем коммент
+    let userId;
+    const candidate = await this.userService.getUserByEmail(email);
+    if (candidate) {
+      userId = candidate.id;
+    } else {
+      const user = await this.userService.create({ username, email, homeUrl });
+      userId = user.id;
+    }
     const commentDto = {
       message: JSON.stringify(message),
-      userId: 1,
-      parentId: parentId,
+      userId,
+      parentId,
     };
 
+    const jwt = await this.tokenService.generateToken({
+      username,
+      email,
+      homeUrl,
+    });
+
     const res = await this.commentRepository.create(commentDto);
-    return res;
+    return { success: true, accessToken: jwt.accessToken };
   }
 
   async getRootComments(limit, offset, sortField, sortType) {
@@ -29,7 +43,9 @@ export default class CommentService {
       sortType,
     };
     const res = await this.commentRepository.getRootComments(commentsDto);
-    const count = await this.commentRepository.getCountAllRootComments(commentsDto);
+    const count = await this.commentRepository.getCountAllRootComments(
+      commentsDto,
+    );
     return { comments: res, count };
   }
 

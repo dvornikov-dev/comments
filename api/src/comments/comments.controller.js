@@ -20,7 +20,10 @@ export default class CommentConroller extends BaseController {
           body('email').isEmail().withMessage('Email is invalid'),
           body('homeUrl').optional().isURL().withMessage('Url is invalid'),
           body('message').not().isEmpty().withMessage('Message is required'),
-          body('parentId').optional().isInt().withMessage('Parent Id is invalid'),
+          body('parentId')
+            .optional()
+            .isInt()
+            .withMessage('Parent Id is invalid'),
         ],
       },
       {
@@ -42,9 +45,7 @@ export default class CommentConroller extends BaseController {
         path: '/childs',
         method: 'get',
         func: this.getChildsComments,
-        middlewares: [
-          check('parentId').isInt(),
-        ],
+        middlewares: [check('parentId').isInt()],
       },
     ];
     this.io = io;
@@ -60,13 +61,13 @@ export default class CommentConroller extends BaseController {
     } else {
       try {
         const result = await this.commentsService.create(req.body);
-        if(result) {
-          this.io.emit("update", "update");
+        if (result) {
+          this.io.emit('update', 'update');
         }
+        this.ok(res, result);
       } catch (e) {
         next(e);
       }
-      this.ok(res, { success: true });
     }
   };
 
@@ -103,5 +104,5 @@ export default class CommentConroller extends BaseController {
         next(e);
       }
     }
-  }
+  };
 }

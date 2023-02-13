@@ -8,7 +8,7 @@ export default class UserConroller extends BaseController {
       {
         path: '/',
         method: 'get',
-        func: this.getUsers,
+        func: this.getUser,
         middlewares: [],
       },
     ];
@@ -17,8 +17,18 @@ export default class UserConroller extends BaseController {
     this.usersService = new UserService();
   }
 
-  getUsers = async (req, res) => {
-    const users = await this.usersService.getUsers();
-    this.ok(res, users);
+  getUser = async (req, res, next) => {
+    try {
+      const headerAuthorization = req.headers.authorization;
+      if (!headerAuthorization) {
+        throw Error('Invalid authorization header');
+      }
+      const accessToken = headerAuthorization.split(' ')[1];
+
+      const users = await this.usersService.getUser({ token: accessToken });
+      this.ok(res, users);
+    } catch (e) {
+      next(e);
+    }
   };
 }

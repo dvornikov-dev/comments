@@ -54,6 +54,18 @@ class CommentForm extends Component {
 
   apiService = new ApiService();
 
+  componentDidMount() {
+    const accessToken = localStorage.getItem("accessToken");
+    console.log(accessToken);
+    this.apiService.getUser(accessToken).then((user) => {
+      this.setState({
+        username: user.username,
+        email: user.email,
+        homeUrl: user.homeUrl,
+      });
+    });
+  }
+
   onUsernameChange = (e) => {
     this.setState({ username: e.target.value });
   };
@@ -81,7 +93,7 @@ class CommentForm extends Component {
 
   onSubmit = async (e) => {
     e.preventDefault();
-    this.setState({ error: {}, loading: true });
+    this.setState({ error: {} });
     if (this.isEditorEmpty()) {
       this.setState({
         error: {
@@ -90,6 +102,7 @@ class CommentForm extends Component {
       });
       return;
     }
+    this.setState({ loading: true });
     const { username, email, homeUrl, editorState } = this.state;
     const { parentId, setIsReplying, updateChildrens } = this.props;
 
@@ -102,19 +115,20 @@ class CommentForm extends Component {
     };
 
     const res = await this.apiService.sendComment(comment);
-
-    if (!res) {
-      this.setState({ error: { form: "Unexpected error" } });
+    if (res.message) {
+      this.setState({ error: { form: res.message } });
     }
     if (res.errors) {
       let errorsState = {};
       res.errors.forEach((error) => {
         errorsState[error.param] = error.msg;
       });
-      console.log(errorsState);
       this.setState({ error: errorsState });
     }
     if (res.success) {
+      if (res.accessToken) {
+        localStorage.setItem("accessToken", res.accessToken);
+      }
       if (parentId) {
         setIsReplying(false);
         updateChildrens();
