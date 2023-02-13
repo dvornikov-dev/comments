@@ -1,6 +1,6 @@
 class ApiService {
   _apiBase = "http://localhost:8000/";
-
+  wsUrl = "ws://localhost:8000";
   LIMIT = 25;
 
   getResource = async (url, options) => {
@@ -28,8 +28,7 @@ class ApiService {
   };
 
   sendComment = async (comment) => {
-    // TODO: config
-    return this.getResource(`http://localhost:8000/comments`, {
+    return this.getResource(`${this._apiBase}comments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=utf-8",
