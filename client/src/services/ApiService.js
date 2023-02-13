@@ -10,10 +10,10 @@ class ApiService {
     return await res.json();
   };
 
-  getRootComments = async (offset = 0) => {
+  getRootComments = async (offset = 0, sortField = "id", sortType = "desc") => {
     //TODO limit config
     const res = await this.getResource(
-      `${this._apiBase}comments?limit=25&offset=${offset}`
+      `${this._apiBase}comments?limit=25&offset=${offset}&sortField=${sortField}&sortType=${sortType}`
     );
     return res;
   };

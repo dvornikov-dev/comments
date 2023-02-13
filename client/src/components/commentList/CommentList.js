@@ -5,9 +5,6 @@ import "./commentList.css";
 class CommentList extends Component {
   render() {
     const { comments } = this.props;
-
-    console.log(comments);
-
     return comments.map((comment) => <Comment {...comment} key={comment.id} />);
   }
 }

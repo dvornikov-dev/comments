@@ -90,14 +90,17 @@ class CommentForm extends Component {
     }
     const { editorState } = this.state;
 
+    const { parentId } = this.props;
+
     const comment = {
       username: this.state.username,
       email: this.state.email,
       homeUrl: this.state.homeUrl ? this.state.homeUrl : undefined,
       message: convertToRaw(editorState.getCurrentContent()),
+      parentId: parentId ? parentId : undefined,
     };
-
     const res = await this.apiService.sendComment(comment);
+
     if (!res) {
       this.setState({ error: { form: "Unexpected error" } });
     }
@@ -120,8 +123,6 @@ class CommentForm extends Component {
   };
 
   onEditorStateChange = (editorState) => {
-    // const a = draftToHtml(convertToRaw(editorState.getCurrentContent()));
-    // console.log(a);
     this.setState({
       editorState,
     });

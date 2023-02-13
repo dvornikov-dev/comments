@@ -3,11 +3,14 @@ import avatar from "../../resources/blank.png";
 import draftToHtml from "draftjs-to-html";
 import ApiService from "../../services/ApiService";
 import CommentList from "../commentList/CommentList";
+import CommentForm from "../commentForm/CommentForm";
 import "./comment.css";
 
 class Comment extends Component {
   state = {
     childComments: [],
+    isReplying: false,
+    childrenHidden: true,
   };
 
   apiService = new ApiService();
@@ -21,9 +24,15 @@ class Comment extends Component {
     this.setState({ childComments: comments });
   };
 
+  setIsReplying = (isReplying) => this.setState({ isReplying });
+
+  setChildrenHidden = (childrenHidden) => this.setState({ childrenHidden });
+
+  onCommentReply = () => {};
+
   render() {
     const { id, message, user, createdAt } = this.props;
-    const { childComments } = this.state;
+    const { childComments, isReplying, childrenHidden } = this.state;
     const date = new Date(createdAt);
     const options = {
       month: "short",
@@ -81,6 +90,7 @@ class Comment extends Component {
             <button
               type="button"
               className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400"
+              onClick={() => this.setIsReplying(!isReplying)}
             >
               <svg
                 aria-hidden="true"
@@ -97,13 +107,45 @@ class Comment extends Component {
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 ></path>
               </svg>
-              Reply
+              {isReplying ? "Cancel Reply" : "Reply"}
             </button>
           </div>
-          {childComments.length > 0 && (
-            <div className="" id="nested-comments">
-              <CommentList comments={childComments} />
+          {isReplying && (
+            <div className="mt-1 ml-3">
+              <CommentForm
+                autoFocus
+                onSubmit={this.onCommentReply}
+                parentId={id}
+              />
             </div>
+          )}
+          {childComments.length > 0 && (
+            <>
+              <button
+                className={`flex items-center ${
+                  childrenHidden ? "hidden" : ""
+                } mx-auto text-sm text-gray-500 hover:underline dark:text-gray-400`}
+                onClick={() => this.setChildrenHidden(true)}
+              >
+                Hide Replies
+              </button>
+              <div
+                className={`transition-opacity duration-300 ease-in-out ${
+                  childrenHidden ? "hidden" : ""
+                }`}
+                id="nested-comments"
+              >
+                <CommentList comments={childComments} />
+              </div>
+              <button
+                onClick={() => this.setChildrenHidden(false)}
+                className={`flex ${
+                  !childrenHidden ? "hidden" : ""
+                } items-center mx-auto text-sm text-gray-500 hover:underline dark:text-gray-400`}
+              >
+                Show Replies
+              </button>
+            </>
           )}
         </article>
       </>
