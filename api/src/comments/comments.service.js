@@ -9,7 +9,7 @@ export default class CommentService {
     this.tokenService = new TokenService();
   }
 
-  async create({ username, email, homeUrl, message, parentId }) {
+  async create({ username, email, homeUrl, message, parentId, file }) {
     // каптча
     let userId;
     const candidate = await this.userService.getUserByEmail(email);
@@ -19,11 +19,6 @@ export default class CommentService {
       const user = await this.userService.create({ username, email, homeUrl });
       userId = user.id;
     }
-    const commentDto = {
-      message: JSON.stringify(message),
-      userId,
-      parentId,
-    };
 
     const jwt = await this.tokenService.generateToken({
       username,
@@ -31,7 +26,20 @@ export default class CommentService {
       homeUrl,
     });
 
+    const commentDto = {
+      message: JSON.stringify(message),
+      userId,
+      parentId,
+    };
+
     const res = await this.commentRepository.create(commentDto);
+    if (file) {
+      const fileModel = await this.commentRepository.addFile({
+        commentId: res.id,
+        ...file,
+      });
+    }
+
     return { success: true, accessToken: jwt.accessToken };
   }
 

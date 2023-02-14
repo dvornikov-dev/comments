@@ -2,6 +2,7 @@ import BaseController from '../common/base.controller.js';
 import CommentService from './comments.service.js';
 import ApiExeption from '../exeptions/api.exeption.js';
 import { body, validationResult, check } from 'express-validator';
+import FileService from '../services/file.service.js';
 
 export default class CommentConroller extends BaseController {
   constructor(io) {
@@ -54,12 +55,32 @@ export default class CommentConroller extends BaseController {
     this.commentsService = new CommentService();
   }
 
+  fileService = new FileService();
+
   create = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       next(ApiExeption.BadRequest('Validation Error', errors.array()));
     } else {
       try {
+        const { file } = req.body;
+        if (file) {
+          const validationResult = await this.fileService.validateFile(file);
+          if (!validationResult.success) {
+            next(
+              ApiExeption.BadRequest('Validation Error', {
+                message: validationResult.message,
+              }),
+            );
+          }
+          const fileObj = await this.fileService.saveFile(
+            validationResult.file,
+            validationResult.extension,
+          );
+
+          req.body.file = fileObj;
+        }
+
         const result = await this.commentsService.create(req.body);
         if (result) {
           this.io.emit('update', 'update');

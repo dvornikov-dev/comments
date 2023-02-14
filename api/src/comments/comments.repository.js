@@ -17,11 +17,27 @@ export default class CommentRepository {
         homeUrl: true,
       },
     },
+    file: {
+      select: {
+        fileName: true,
+        extension: true,
+      },
+    },
   };
 
   async create(commentDto) {
     return this.prismaService.client.comment.create({
       data: commentDto,
+    });
+  }
+
+  async addFile({ commentId, fileName, extension }) {
+    return this.prismaService.client.file.create({
+      data: {
+        fileName,
+        extension,
+        commentId,
+      },
     });
   }
 
