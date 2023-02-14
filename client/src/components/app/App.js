@@ -17,8 +17,8 @@ class App extends Component {
     currentPage: 1,
     isSortOpen: false,
     isSortTypeOpen: false,
-    sortField: undefined,
-    sortType: undefined,
+    sortField: "",
+    sortType: "",
   };
 
   apiService = new ApiService();

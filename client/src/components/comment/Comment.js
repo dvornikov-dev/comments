@@ -4,6 +4,7 @@ import draftToHtml from "draftjs-to-html";
 import ApiService from "../../services/ApiService";
 import CommentList from "../commentList/CommentList";
 import CommentForm from "../commentForm/CommentForm";
+import LightBox from "./LightBox";
 import "./comment.css";
 
 class Comment extends Component {
@@ -11,6 +12,7 @@ class Comment extends Component {
     childComments: [],
     isReplying: false,
     childrenHidden: true,
+    fileUrl: "",
   };
 
   apiService = new ApiService();
@@ -20,6 +22,10 @@ class Comment extends Component {
     if (local) return;
     this.apiService.getChildComments(id).then(this.onCommentsLoaded);
   }
+
+  onBoxToggle = (e) => {
+    this.setState(({ toggler }) => ({ toggler: !toggler }));
+  };
 
   onCommentsLoaded = ({ comments }) => {
     this.setState({ childComments: comments });
@@ -39,7 +45,7 @@ class Comment extends Component {
   };
 
   render() {
-    const { id, message, user, createdAt } = this.props;
+    const { id, message, user, createdAt, file } = this.props;
     const { childComments, isReplying, childrenHidden } = this.state;
     const date = new Date(createdAt);
 
@@ -53,6 +59,8 @@ class Comment extends Component {
     const formattedDate = date.toLocaleString("en-US", options);
 
     const messageHtml = draftToHtml(JSON.parse(message));
+
+    const txt = file?.extension === "txt" ? true : false;
 
     return (
       <>
@@ -94,6 +102,26 @@ class Comment extends Component {
             className="break-all"
             dangerouslySetInnerHTML={{ __html: messageHtml }}
           ></div>
+          <button onClick={this.onBoxToggle}>asd</button>
+          {!txt && file && (
+            <LightBox
+              images={[
+                `${this.apiService._apiStatic}${file.fileName}.${file.extension}`,
+              ]}
+            />
+          )}
+
+          {txt && (
+            <>
+              <br />
+              <a
+                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                href={`${this.apiService._apiStatic}${file.fileName}.${file.extension}`}
+              >
+                {`${file.fileName}.${file.extension}`}
+              </a>
+            </>
+          )}
 
           <div className="flex items-center mt-4 space-x-4">
             <button

@@ -3,6 +3,7 @@ import { Editor } from "react-draft-wysiwyg";
 import { convertToRaw, convertFromRaw, EditorState } from "draft-js";
 import ApiService from "../../services/ApiService";
 import getRandomKey from "../../tools/getRandomKey";
+import validateFile from "../../tools/validateFile";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./commentForm.css";
 
@@ -39,6 +40,7 @@ class CommentForm extends Component {
     username: "",
     email: "",
     homeUrl: "",
+    file: "",
     editorState: emptyEditor,
     loading: false,
     isPreviewing: false,
@@ -56,15 +58,17 @@ class CommentForm extends Component {
 
   componentDidMount() {
     const accessToken = localStorage.getItem("accessToken");
-    console.log(accessToken);
-    this.apiService.getUser(accessToken).then((user) => {
-      this.setState({
-        username: user.username,
-        email: user.email,
-        homeUrl: user.homeUrl,
-      });
-    });
+    this.apiService.getUser(accessToken).then(this.onUserLoaded);
   }
+
+  onUserLoaded = (user) => {
+    const { username, email, homeUrl } = user;
+    this.setState({
+      username: username ? username : "",
+      email: email ? email : "",
+      homeUrl: homeUrl ? homeUrl : "",
+    });
+  };
 
   onUsernameChange = (e) => {
     this.setState({ username: e.target.value });
@@ -78,8 +82,8 @@ class CommentForm extends Component {
     this.setState({ homeUrl: e.target.value });
   };
 
-  onMessageChange = (e) => {
-    this.setState({ message: e.target.value });
+  onFileChange = (e) => {
+    this.setState({ file: e.target.files[0] });
   };
 
   isEditorEmpty = () => {
@@ -94,6 +98,8 @@ class CommentForm extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
     this.setState({ error: {} });
+    const { username, email, homeUrl, editorState, file } = this.state;
+    const { parentId, setIsReplying, updateChildrens } = this.props;
     if (this.isEditorEmpty()) {
       this.setState({
         error: {
@@ -102,9 +108,15 @@ class CommentForm extends Component {
       });
       return;
     }
+    if (file) {
+      const validateResult = validateFile(file);
+      if (validateResult.error) {
+        this.setState({ error: { file: validateResult.error } });
+        return;
+      }
+    }
+
     this.setState({ loading: true });
-    const { username, email, homeUrl, editorState } = this.state;
-    const { parentId, setIsReplying, updateChildrens } = this.props;
 
     const comment = {
       username: username,
@@ -112,18 +124,19 @@ class CommentForm extends Component {
       homeUrl: homeUrl ? homeUrl : undefined,
       message: convertToRaw(editorState.getCurrentContent()),
       parentId: parentId ? parentId : undefined,
+      file,
     };
 
     const res = await this.apiService.sendComment(comment);
     if (res.message) {
-      this.setState({ error: { form: res.message } });
+      this.setState({ error: { form: res.message }, loading: false });
     }
     if (res.errors) {
       let errorsState = {};
       res.errors.forEach((error) => {
         errorsState[error.param] = error.msg;
       });
-      this.setState({ error: errorsState });
+      this.setState({ error: errorsState, loading: false });
     }
     if (res.success) {
       if (res.accessToken) {
@@ -276,6 +289,7 @@ class CommentForm extends Component {
             <label>
               <input
                 type="file"
+                onChange={this.onFileChange}
                 className="text-sm text-grey-500 file:mr-5 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:cursor-pointer hover:file:bg-amber-50 hover:file:text-amber-700"
               />
             </label>

@@ -1,10 +1,6 @@
 import { Component } from "react";
 
 class Pagination extends Component {
-  state = {
-    currentPage: 1,
-  };
-
   onPrev = () => {
     const {
       count,
