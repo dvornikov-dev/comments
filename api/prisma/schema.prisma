@@ -38,3 +38,9 @@ model File {
   comment   Comment @relation(fields: [commentId], references: [id])
   commentId Int     @unique
 }
+
+model Captcha {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+}

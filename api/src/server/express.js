@@ -6,6 +6,7 @@ import { Server } from 'socket.io';
 import prismaService from '../services/prisma.service.js';
 import UserController from '../users/users.controller.js';
 import CommentController from '../comments/comments.controller.js';
+import CaptchaController from '../captcha/captcha.controller.js';
 import errorMiddleware from '../middlewares/error.middleware.js';
 
 export default async (port) => {
@@ -34,6 +35,8 @@ export default async (port) => {
   app.use('/users', userController.router);
   const commentsController = new CommentController(io);
   app.use('/comments', commentsController.router);
+  const captchaController = new CaptchaController();
+  app.use('/captcha', captchaController.router);
   app.use(errorMiddleware);
   await prismaService.connect();
 

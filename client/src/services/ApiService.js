@@ -23,6 +23,18 @@ class ApiService {
     return await res.json();
   };
 
+  getCaptcha = async () => {
+    const res = await this.getResource(`${this._apiBase}captcha`);
+    return res;
+  };
+
+  verifyCaptcha = async (id, text) => {
+    const res = await this.getResource(
+      `${this._apiBase}captcha/verify?id=${id}&text=${text}`
+    );
+    return res;
+  };
+
   getRootComments = async (offset = 0, sortField = "id", sortType = "desc") => {
     sortField = sortField ? sortField : "id";
     sortType = sortType ? sortType : "desc";

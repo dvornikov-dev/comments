@@ -4,6 +4,7 @@ import { convertToRaw, convertFromRaw, EditorState } from "draft-js";
 import ApiService from "../../services/ApiService";
 import getRandomKey from "../../tools/getRandomKey";
 import validateFile from "../../tools/validateFile";
+import SVG from "react-inlinesvg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import "./commentForm.css";
 
@@ -44,6 +45,11 @@ class CommentForm extends Component {
     editorState: emptyEditor,
     loading: false,
     isPreviewing: false,
+    captcha: {
+      id: "",
+      data: "",
+    },
+    captchaText: "",
     error: {
       username: "",
       email: "",
@@ -59,7 +65,25 @@ class CommentForm extends Component {
   componentDidMount() {
     const accessToken = localStorage.getItem("accessToken");
     this.apiService.getUser(accessToken).then(this.onUserLoaded);
+    this.refreshCaptcha();
   }
+
+  refreshCaptcha = () => {
+    this.apiService
+      .getCaptcha()
+      .then((captcha) => {
+        if (captcha.data) {
+          this.setState({ captcha });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  onCaptchaTextChange = (e) => {
+    this.setState({ captchaText: e.target.value });
+  };
 
   onUserLoaded = (user) => {
     const { username, email, homeUrl } = user;
@@ -98,7 +122,15 @@ class CommentForm extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
     this.setState({ error: {} });
-    const { username, email, homeUrl, editorState, file } = this.state;
+    const {
+      username,
+      email,
+      homeUrl,
+      editorState,
+      file,
+      captchaText,
+      captcha,
+    } = this.state;
     const { parentId, setIsReplying, updateChildrens } = this.props;
     if (this.isEditorEmpty()) {
       this.setState({
@@ -116,6 +148,17 @@ class CommentForm extends Component {
       }
     }
 
+    const captchaResult = await this.apiService.verifyCaptcha(
+      captcha.id,
+      captchaText
+    );
+
+    if (!captchaResult.success) {
+      console.log(captchaResult);
+      this.setState({ error: { form: "Captcha is invalid" } });
+      return;
+    }
+
     this.setState({ loading: true });
 
     const comment = {
@@ -124,6 +167,10 @@ class CommentForm extends Component {
       homeUrl: homeUrl ? homeUrl : undefined,
       message: convertToRaw(editorState.getCurrentContent()),
       parentId: parentId ? parentId : undefined,
+      captcha: {
+        id: captcha.id,
+        text: captchaText,
+      },
       file,
     };
 
@@ -304,6 +351,16 @@ class CommentForm extends Component {
                 : "PNG, JPG or GIF (MAX. 320x240px). TXT"}
             </p>
           </div>
+          <SVG src={`data:image/svg+xml;utf8,${this.state.captcha.data}`} />
+          <input
+            type="text"
+            name="captcha"
+            id="captcha"
+            className={`border mb-3 w-30 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+            onChange={this.onCaptchaTextChange}
+            value={this.state.captchaText}
+            required
+          />
           <div className={error.form ? `text-red-500` : "hidden"}>
             {error.form}
           </div>

@@ -1,5 +1,6 @@
 import BaseController from '../common/base.controller.js';
 import CommentService from './comments.service.js';
+import CaptchaService from '../captcha/captcha.service.js';
 import ApiExeption from '../exeptions/api.exeption.js';
 import { body, validationResult, check } from 'express-validator';
 import FileService from '../services/file.service.js';
@@ -53,6 +54,7 @@ export default class CommentConroller extends BaseController {
     this.binRoutes(routes);
 
     this.commentsService = new CommentService();
+    this.captchaService = new CaptchaService();
   }
 
   fileService = new FileService();
@@ -63,7 +65,19 @@ export default class CommentConroller extends BaseController {
       next(ApiExeption.BadRequest('Validation Error', errors.array()));
     } else {
       try {
-        const { file } = req.body;
+        const { file, captcha } = req.body;
+        const checkCaptcha = await this.captchaService.verifyCaptcha(
+          captcha.id,
+          captcha.text,
+        );
+
+        if (!checkCaptcha.success) {
+          next(
+            ApiExeption.BadRequest('Captcha is invalid', {
+              message: 'Captcha is invalid',
+            }),
+          );
+        }
         if (file) {
           const validationResult = await this.fileService.validateFile(file);
           if (!validationResult.success) {
@@ -73,6 +87,7 @@ export default class CommentConroller extends BaseController {
               }),
             );
           }
+
           const fileObj = await this.fileService.saveFile(
             validationResult.file,
             validationResult.extension,

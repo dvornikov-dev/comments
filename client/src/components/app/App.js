@@ -52,7 +52,6 @@ class App extends Component {
   };
 
   onUpdate = (message) => {
-    console.log("update message");
     this.onRequest(this.state.offset);
   };
 

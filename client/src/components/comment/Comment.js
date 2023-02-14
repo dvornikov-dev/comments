@@ -102,7 +102,6 @@ class Comment extends Component {
             className="break-all"
             dangerouslySetInnerHTML={{ __html: messageHtml }}
           ></div>
-          <button onClick={this.onBoxToggle}>asd</button>
           {!txt && file && (
             <LightBox
               images={[
