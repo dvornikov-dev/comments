@@ -26,6 +26,15 @@ model Comment {
   parent    Comment?  @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
   childrens Comment[] @relation("ParentChild")
   parentId  Int?
+  file      File?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model File {
+  id        Int     @id @default(autoincrement())
+  fileName  String
+  extension String
+  comment   Comment @relation(fields: [commentId], references: [id])
+  commentId Int     @unique
 }
