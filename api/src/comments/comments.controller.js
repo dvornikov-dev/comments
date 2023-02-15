@@ -93,14 +93,23 @@ export default class CommentConroller extends BaseController {
               }),
             );
           }
-          req.body.file = validationResult;
+          if(validationResult.success) {
+            console.log(1)
+            req.body.file = validationResult;
+            const result = await this.commentsService.create(req.body);
+            if (result) {
+              this.io.emit('update', 'update');
+            }
+            this.ok(res, result);
+          }
+        } else {
+          console.log(1);
+          const result = await this.commentsService.create(req.body);
+          if (result) {
+            this.io.emit('update', 'update');
+          }
+          this.ok(res, result);
         }
-
-        const result = await this.commentsService.create(req.body);
-        if (result) {
-          this.io.emit('update', 'update');
-        }
-        this.ok(res, result);
       } catch (e) {
         next(e);
       }

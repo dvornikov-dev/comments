@@ -53,7 +53,7 @@ export default class CommentService {
     if (res) {
       this.eventEmitter.emit('commentsUpdated');
     }
-    if (file) {
+    if (file.success) {
       file.commentId = res.id;
       this.fileQueue.add('processFile', { file });
     }
