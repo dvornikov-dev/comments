@@ -10,7 +10,7 @@ async function main() {
     update: {},
     create: {
       email: 'Test@prisma.io',
-      name: 'Test',
+      username: 'Test',
       homeUrl: 'https://google.com',
       comments: {
         create: array

@@ -10,6 +10,4 @@ COPY . .
 
 RUN npx prisma generate
 
-RUN npm run seed
-
 CMD ["npm", "run", "start"]
