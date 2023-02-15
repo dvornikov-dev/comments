@@ -27,9 +27,12 @@
     "nodemon": "^2.0.20",
     "prettier": "^2.8.3"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "start": "node ./main.js",
-    "dev": "nodemon --exitcrash --legacy-watch ./main.js"
+    "dev": "npx prisma db seed && nodemon --exitcrash --legacy-watch ./main.js"
   },
   "keywords": [],
   "author": "",
