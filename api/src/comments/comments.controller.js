@@ -94,7 +94,6 @@ export default class CommentConroller extends BaseController {
             );
           }
           if(validationResult.success) {
-            console.log(1)
             req.body.file = validationResult;
             const result = await this.commentsService.create(req.body);
             if (result) {
@@ -103,7 +102,6 @@ export default class CommentConroller extends BaseController {
             this.ok(res, result);
           }
         } else {
-          console.log(1);
           const result = await this.commentsService.create(req.body);
           if (result) {
             this.io.emit('update', 'update');
