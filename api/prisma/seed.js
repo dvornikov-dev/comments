@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 const message =
   // eslint-disable-next-line max-len
-  '{"blocks":[{"key":"637gr","text":"PRIVET<script></script>","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}';
+  '{"blocks":[{"key":"637gr","text":"PRIVET","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}';
 
 const array = [
   { message },
@@ -40,7 +40,7 @@ const array = [
 ];
 async function main() {
   const alice = await prisma.user.upsert({
-    where: { email: 'alice@prisma.io' },
+    where: { email: 'Test@prisma.io' },
     update: {},
     create: {
       email: 'Test@prisma.io',
