@@ -1,4 +1,3 @@
-@@ -17,3 +17,20 @@ docker-compose up
 ### Server will be available at http://localhost:8000/
 
 ## About
