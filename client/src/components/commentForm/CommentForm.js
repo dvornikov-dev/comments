@@ -199,7 +199,13 @@ class CommentForm extends Component {
         homeUrl: "",
         editorState: emptyEditor,
         loading: false,
+        captcha: {
+          id: "",
+          data: "",
+        },
+        captchaText: "",
       });
+      this.refreshCaptcha();
     }
   };
 
