@@ -6,7 +6,7 @@ import { body, validationResult, check } from 'express-validator';
 import FileService from '../services/file.service.js';
 
 export default class CommentConroller extends BaseController {
-  constructor(io, cache, eventEmitter) {
+  constructor(io, cache, eventEmitter, fileQueue) {
     super();
     const routes = [
       {
@@ -53,8 +53,13 @@ export default class CommentConroller extends BaseController {
     this.io = io;
     this.cache = cache;
     this.eventEmitter = eventEmitter;
+    this.fileQueue = fileQueue;
     this.binRoutes(routes);
-    this.commentsService = new CommentService(this.cache, this.eventEmitter);
+    this.commentsService = new CommentService(
+      this.cache,
+      this.eventEmitter,
+      this.fileQueue,
+    );
     this.captchaService = new CaptchaService();
   }
 

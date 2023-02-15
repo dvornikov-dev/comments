@@ -9,6 +9,9 @@ import CaptchaController from '../captcha/captcha.controller.js';
 import errorMiddleware from '../middlewares/error.middleware.js';
 import NodeCache from 'node-cache';
 import EventEmitter from 'events';
+import FileService from '../services/file.service.js';
+import FileRepository from '../common/file.repository.js';
+import { Queue, Worker } from 'bullmq';
 
 export default async (port) => {
   const app = express();
@@ -38,10 +41,50 @@ export default async (port) => {
   const cache = new NodeCache({ stdTTL: 300 });
   const eventEmitter = new EventEmitter();
 
+  //file queque
+  const fileQueue = new Queue('fileQueue', {
+    connection: {
+      host: 'redis',
+      port: 6379,
+    },
+  });
+
+  const fileService = new FileService();
+  const fileRepository = new FileRepository();
+
+  const worker = new Worker(
+    'fileQueue',
+    async (job) => {
+      if (job.name === 'processFile') {
+        const file = job.data.file;
+        const fileObj = await fileService.saveFile(file.file, file.extension);
+        const fileModel = await fileRepository.addFile({
+          commentId: file.commentId,
+          ...fileObj,
+        });
+      }
+    },
+    {
+      connection: {
+        host: 'redis',
+        port: 6379,
+      },
+    },
+  );
+  worker.on('completed', (job) => {
+    eventEmitter.emit('commentsUpdated');
+    console.log(`Job ${job.id} completed`);
+  });
+
   //routes
   const userController = new UserController(io);
   app.use('/users', userController.router);
-  const commentsController = new CommentController(io, cache, eventEmitter);
+  const commentsController = new CommentController(
+    io,
+    cache,
+    eventEmitter,
+    fileQueue,
+  );
   app.use('/comments', commentsController.router);
   const captchaController = new CaptchaController();
   app.use('/captcha', captchaController.router);
