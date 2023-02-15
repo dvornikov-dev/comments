@@ -26,6 +26,7 @@
     "prettier": "^2.8.3"
   },
   "scripts": {
+    "start": "node ./main.js",
     "dev": "nodemon --exitcrash --legacy-watch ./main.js"
   },
   "keywords": [],
