@@ -1,12 +1,14 @@
 import CommentRepository from './comments.repository.js';
 import UserService from './../users/users.service.js';
 import TokenService from '../services/token.service.js';
+import FileService from '../services/file.service.js';
 
 export default class CommentService {
   constructor() {
     this.commentRepository = new CommentRepository();
     this.userService = new UserService();
     this.tokenService = new TokenService();
+    this.fileService = new FileService();
   }
 
   async create({ username, email, homeUrl, message, parentId, file }) {
@@ -34,9 +36,13 @@ export default class CommentService {
 
     const res = await this.commentRepository.create(commentDto);
     if (file) {
+      const fileObj = await this.fileService.saveFile(
+        file.file,
+        file.extension,
+      );
       const fileModel = await this.commentRepository.addFile({
         commentId: res.id,
-        ...file,
+        ...fileObj,
       });
     }
 
@@ -51,9 +57,7 @@ export default class CommentService {
       sortType,
     };
     const res = await this.commentRepository.getRootComments(commentsDto);
-    const count = await this.commentRepository.getCountAllRootComments(
-      commentsDto,
-    );
+    const count = await this.commentRepository.getCountAllRootComments();
     return { comments: res, count };
   }
 

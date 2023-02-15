@@ -87,13 +87,7 @@ export default class CommentConroller extends BaseController {
               }),
             );
           }
-
-          const fileObj = await this.fileService.saveFile(
-            validationResult.file,
-            validationResult.extension,
-          );
-
-          req.body.file = fileObj;
+          req.body.file = validationResult;
         }
 
         const result = await this.commentsService.create(req.body);
