@@ -21,7 +21,7 @@ export default class UserService {
       username,
       email,
     );
-    return !!res;
+    return res.length > 0;
   }
 
   async create({ username, email, homeUrl }) {
