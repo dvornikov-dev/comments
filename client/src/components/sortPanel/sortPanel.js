@@ -24,7 +24,7 @@ class SortPanel extends Component {
           <button
             id="dropdownActionButton"
             data-dropdown-toggle="dropdownAction"
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 "
             type="button"
             onClick={toggleSortType}
           >
@@ -51,10 +51,10 @@ class SortPanel extends Component {
             id="dropdownAction"
             className={`z-10 ${
               isSortTypeOpen ? "" : "hidden"
-            } absolute bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}
+            } absolute bg-white divide-y divide-gray-100 rounded-lg shadow w-44 `}
           >
             <ul
-              className="py-1 text-sm text-gray-700 dark:text-gray-200"
+              className="py-1 text-sm text-gray-700 "
               aria-labelledby="dropdownActionButton"
               onClick={toggleSortType}
             >
@@ -65,7 +65,7 @@ class SortPanel extends Component {
                     e.preventDefault();
                     onSortChange(sortField, "asc");
                   }}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Asc
                 </a>
@@ -77,7 +77,7 @@ class SortPanel extends Component {
                     e.preventDefault();
                     onSortChange(sortField, "desc");
                   }}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Desc
                 </a>
@@ -89,7 +89,7 @@ class SortPanel extends Component {
           <button
             id="dropdownActionButton"
             data-dropdown-toggle="dropdownAction"
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5"
             type="button"
             onClick={toggleSort}
           >
@@ -115,17 +115,17 @@ class SortPanel extends Component {
             id="dropdownAction"
             className={`z-10 ${
               isSortOpen ? "" : "hidden"
-            } absolute bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600`}
+            } absolute bg-white divide-y divide-gray-100 rounded-lg shadow w-44 `}
           >
             <ul
-              className="py-1 text-sm text-gray-700 dark:text-gray-200"
+              className="py-1 text-sm text-gray-700 "
               aria-labelledby="dropdownActionButton"
               onClick={toggleSort}
             >
               <li>
                 <a
                   href="#t"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="block px-4 py-2 hover:bg-gray-100"
                   onClick={(e) => {
                     e.preventDefault();
                     onSortChange("username", sortType);
@@ -137,7 +137,7 @@ class SortPanel extends Component {
               <li>
                 <a
                   href="#t"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="block px-4 py-2 hover:bg-gray-100 "
                   onClick={(e) => {
                     e.preventDefault();
                     onSortChange("email", sortType);
@@ -149,7 +149,7 @@ class SortPanel extends Component {
               <li>
                 <a
                   href="#t"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="block px-4 py-2 hover:bg-gray-100 "
                   onClick={(e) => {
                     e.preventDefault();
                     onSortChange("createdAt", sortType);
