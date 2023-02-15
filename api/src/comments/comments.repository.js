@@ -81,11 +81,6 @@ export default class CommentRepository {
         [sortField]: sort,
       };
     }
-    console.log({
-      take: limit,
-      skip: offset,
-      orderBy,
-    });
     return this.prismaService.client.comment.findMany({
       take: limit,
       skip: offset,

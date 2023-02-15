@@ -4,11 +4,17 @@ import TokenService from '../services/token.service.js';
 import FileService from '../services/file.service.js';
 
 export default class CommentService {
-  constructor() {
+  constructor(cache, eventEmitter) {
     this.commentRepository = new CommentRepository();
     this.userService = new UserService();
     this.tokenService = new TokenService();
     this.fileService = new FileService();
+    this.cache = cache;
+    this.eventEmitter = eventEmitter;
+
+    this.eventEmitter.on('commentsUpdated', () => {
+      this.cache.flushAll();
+    });
   }
 
   async create({ username, email, homeUrl, message, parentId, file }) {
@@ -35,6 +41,9 @@ export default class CommentService {
     };
 
     const res = await this.commentRepository.create(commentDto);
+    if (res) {
+      this.eventEmitter.emit('commentsUpdated');
+    }
     if (file) {
       const fileObj = await this.fileService.saveFile(
         file.file,
@@ -50,20 +59,35 @@ export default class CommentService {
   }
 
   async getRootComments(limit, offset, sortField, sortType) {
-    const commentsDto = {
-      limit: limit ? Number(limit) : undefined,
-      offset: offset ? Number(offset) : undefined,
-      sortField,
-      sortType,
-    };
-    const res = await this.commentRepository.getRootComments(commentsDto);
-    const count = await this.commentRepository.getCountAllRootComments();
-    return { comments: res, count };
+    const cacheKey = `query:${limit}:${offset}:${sortField}:${sortType}`;
+    const cachedData = this.cache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    } else {
+      const commentsDto = {
+        limit: limit ? Number(limit) : undefined,
+        offset: offset ? Number(offset) : undefined,
+        sortField,
+        sortType,
+      };
+      const res = await this.commentRepository.getRootComments(commentsDto);
+      const count = await this.commentRepository.getCountAllRootComments();
+      this.cache.set(cacheKey, { comments: res, count });
+      return { comments: res, count };
+    }
   }
 
   async getChildsComments(parentId) {
-    const res = await this.commentRepository.getCildsComments(Number(parentId));
-
-    return { comments: res };
+    const cacheKey = `query:${parentId}}`;
+    const cachedData = this.cache.get(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    } else {
+      const res = await this.commentRepository.getCildsComments(
+        Number(parentId),
+      );
+      this.cache.set(cacheKey, { comments: res });
+      return { comments: res };
+    }
   }
 }
