@@ -31,7 +31,7 @@
     "seed": "node prisma/seed.js"
   },
   "scripts": {
-    "start": "node ./main.js",
+    "start": "npx prisma db seed && node ./main.js",
     "dev": "nodemon --exitcrash --legacy-watch ./main.js",
     "seed": "node prisma/seed.js"
   },
