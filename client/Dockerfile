@@ -4,11 +4,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "build"]
 
-#Stage 2
-# FROM nginx:alpine
-# WORKDIR /usr/share/nginx/html
-# RUN rm -rf ./*
-# COPY --from=builder /app/build .
-# ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
+# Stage 2
+FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=builder /app/build .
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
