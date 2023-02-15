@@ -1,9 +1,9 @@
 import toBase64 from "../tools/toBase64";
 class ApiService {
-  _apiBase = "http://localhost:8000/";
-  _apiStatic = "http://localhost:8001/";
+  _apiBase = "http://134.209.82.213:8000/";
+  _apiStatic = "http://134.209.82.213:8001/";
 
-  wsUrl = "ws://localhost:8000";
+  wsUrl = "ws://134.209.82.213:8000";
   LIMIT = 25;
 
   getFile = async (fileName, extension) => {
