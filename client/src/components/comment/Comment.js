@@ -64,10 +64,10 @@ class Comment extends Component {
 
     return (
       <>
-        <article className="p-6 pb-1 pl-0 ml-3 text-base bg-white rounded-lg dark:bg-gray-900">
+        <article className="p-6 pb-1 pl-0 ml-3 text-base bg-white rounded-lg ">
           <footer className="flex justify-between items-center mb-2">
             <div className="flex items-center">
-              <p className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+              <p className="inline-flex items-center mr-3 text-sm text-gray-900 ">
                 <img
                   className="mr-2 w-6 h-6 rounded-full"
                   src={avatar}
@@ -76,7 +76,7 @@ class Comment extends Component {
                 {user.homeUrl ? (
                   <a
                     href={user.homeUrl}
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    className="font-medium text-blue-600 hover:underline"
                   >
                     {user.username}
                   </a>
@@ -86,12 +86,12 @@ class Comment extends Component {
                 &nbsp;&nbsp;
                 <a
                   href={`mailto:${user.email}`}
-                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  className="font-medium text-blue-600 hover:underline"
                 >
                   {user.email}
                 </a>
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 ">
                 <time pubdate="true" dateTime={createdAt} title={formattedDate}>
                   {formattedDate}
                 </time>
@@ -114,7 +114,7 @@ class Comment extends Component {
             <>
               <br />
               <a
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                className="font-medium text-blue-600 hover:underline"
                 href={`${this.apiService._apiStatic}${file.fileName}.${file.extension}`}
               >
                 {`${file.fileName}.${file.extension}`}
@@ -125,7 +125,7 @@ class Comment extends Component {
           <div className="flex items-center mt-4 space-x-4">
             <button
               type="button"
-              className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400"
+              className="flex items-center text-sm text-gray-500 hover:underline"
               onClick={() => this.setIsReplying(!isReplying)}
             >
               <svg
@@ -163,7 +163,7 @@ class Comment extends Component {
               <button
                 className={`flex items-center ${
                   childrenHidden ? "hidden" : ""
-                } mx-auto text-sm text-gray-500 hover:underline dark:text-gray-400`}
+                } mx-auto text-sm text-gray-500 hover:underline`}
                 onClick={() => this.setChildrenHidden(true)}
               >
                 Hide Replies
@@ -180,7 +180,7 @@ class Comment extends Component {
                 onClick={() => this.setChildrenHidden(false)}
                 className={`flex ${
                   !childrenHidden ? "hidden" : ""
-                } items-center mx-auto text-sm text-gray-500 hover:underline dark:text-gray-400`}
+                } items-center mx-auto text-sm text-gray-500 hover:underline`}
               >
                 Show Replies
               </button>

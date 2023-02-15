@@ -264,7 +264,7 @@ class CommentForm extends Component {
                 forhtml="username"
                 className={`block ${
                   error.username ? "text-red-500" : "text-gray-900"
-                } mb-2 text-sm font-medium dark:text-white`}
+                } mb-2 text-sm font-medium`}
               >
                 {error.username ? error.username : "Username"}
               </label>
@@ -274,7 +274,7 @@ class CommentForm extends Component {
                 id="username"
                 className={`bg-gray-50 border ${
                   error.username ? "border-red-500" : "border-gray-300"
-                } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5`}
                 placeholder="username"
                 required
                 value={this.state.username}
@@ -287,7 +287,7 @@ class CommentForm extends Component {
                 forhtml="email"
                 className={`block ${
                   error.email ? "text-red-500" : "text-gray-900"
-                } mb-2 text-sm font-medium dark:text-white`}
+                } mb-2 text-sm font-medium `}
               >
                 {error.email ? error.email : "Email"}
               </label>
@@ -297,7 +297,7 @@ class CommentForm extends Component {
                 id="email"
                 className={`bg-gray-50 border ${
                   error.email ? "border-red-500" : "border-gray-300"
-                } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5`}
                 placeholder="name@company.com"
                 required
                 value={this.state.email}
@@ -310,7 +310,7 @@ class CommentForm extends Component {
               forhtml="homeUrl"
               className={`block ${
                 error.homeUrl ? "text-red-500" : "text-gray-900"
-              } mb-2 text-sm font-medium dark:text-white`}
+              } mb-2 text-sm font-medium `}
             >
               {error.homeUrl ? error.homeUrl : "Home URL"}
             </label>
@@ -320,7 +320,7 @@ class CommentForm extends Component {
               id="homeUrl"
               className={`border ${
                 error.homeUrl ? "border-red-500" : "border-gray-300"
-              } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+              } text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 `}
               placeholder="https://example.com"
               value={this.state.homeUrl}
               onChange={this.onHomeUrlChange}
@@ -349,7 +349,7 @@ class CommentForm extends Component {
             <p
               className={`mt-1 text-sm ${
                 error.file ? "text-red-500" : "text-gray-500"
-              } dark:text-gray-300`}
+              }`}
               id="file_input_help"
             >
               {error.file
@@ -362,7 +362,7 @@ class CommentForm extends Component {
             type="text"
             name="captcha"
             id="captcha"
-            className={`border mb-3 w-30 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+            className={`border mb-3 w-30 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5`}
             onChange={this.onCaptchaTextChange}
             value={this.state.captchaText}
             required
@@ -374,14 +374,14 @@ class CommentForm extends Component {
             type="submit"
             className={`inline-flex ${
               isPreviewing ? "hidden" : ""
-            } items-center mr-3 px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800`}
+            } items-center mr-3 px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-blue-800`}
           >
             {!loading ? (
               "Publish post"
             ) : (
               <svg
                 aria-hidden="true"
-                className="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                className="inline w-4 h-4 mr-2 text-gray-200 animate-spin fill-blue-600"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -400,7 +400,7 @@ class CommentForm extends Component {
           <button
             className={`inline-flex ${
               isPreviewing ? "hidden" : ""
-            } items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-300 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-400`}
+            } items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-300 rounded-lg focus:ring-4 focus:ring-blue-200  hover:bg-blue-400`}
             onClick={this.onPreview}
           >
             Preview
@@ -408,7 +408,7 @@ class CommentForm extends Component {
           <button
             className={`inline-flex ${
               !isPreviewing ? "hidden" : ""
-            } items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-300 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-400`}
+            } items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-300 rounded-lg focus:ring-4 focus:ring-blue-200 0 hover:bg-blue-400`}
             onClick={this.onCancel}
           >
             Cancel
