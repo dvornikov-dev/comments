@@ -12,7 +12,9 @@ class FileService {
   MIME_TYPES = ['text/plain', 'image/png', 'image/gif', 'image/jpeg'];
 
   async validateFile(file) {
-    const mimeType = file.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)[1];
+    const mimeTypeRegex = file.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
+    if(!mimeTypeRegex) return { success: false, message: 'Invalid file' };
+    const mimeType = mimeTypeRegex[1];
     // Проверяем тип файла
     if (!this.MIME_TYPES.includes(mimeType)) {
       return { success: false, message: 'Invalid Extension' };
