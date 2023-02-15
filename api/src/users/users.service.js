@@ -9,7 +9,7 @@ export default class UserService {
   async getUser({ token }) {
     const verifyToken = await this.tokenService.validateAccessToken(token);
     if (!verifyToken) return {};
-    return this.userRepository.findByEmail(verifyToken.email);
+    return this.userRepository.getUserByEmail(verifyToken.email);
   }
 
   async getUserByEmail(email) {

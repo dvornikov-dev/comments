@@ -5,13 +5,14 @@ import FileService from '../services/file.service.js';
 import ApiExeption from '../exeptions/api.exeption.js';
 
 export default class CommentService {
-  constructor(cache, eventEmitter) {
+  constructor(cache, eventEmitter, fileQueue) {
     this.commentRepository = new CommentRepository();
     this.userService = new UserService();
     this.tokenService = new TokenService();
     this.fileService = new FileService();
     this.cache = cache;
     this.eventEmitter = eventEmitter;
+    this.fileQueue = fileQueue;
 
     this.eventEmitter.on('commentsUpdated', () => {
       this.cache.flushAll();
@@ -52,15 +53,9 @@ export default class CommentService {
     if (res) {
       this.eventEmitter.emit('commentsUpdated');
     }
-    if (file) {
-      const fileObj = await this.fileService.saveFile(
-        file.file,
-        file.extension,
-      );
-      const fileModel = await this.commentRepository.addFile({
-        commentId: res.id,
-        ...fileObj,
-      });
+    if (file.success) {
+      file.commentId = res.id;
+      this.fileQueue.add('processFile', { file });
     }
 
     return { success: true, accessToken: jwt.accessToken };
