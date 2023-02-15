@@ -3,7 +3,7 @@ const prisma = new PrismaClient()
 
 const message = "{\"blocks\":[{\"key\":\"637gr\",\"text\":\"PRIVET<script></script>\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}";
 
-const array = [    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""},    {"message": ""}];
+const array = [    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message},    {message}];
 async function main() {
   const alice = await prisma.user.upsert({
     where: { email: 'alice@prisma.io' },
