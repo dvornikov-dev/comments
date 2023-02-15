@@ -9,10 +9,25 @@ export default class UserRepository {
     return this.prismaService.client.User.findMany();
   }
 
-  async findByEmail(email) {
+  async getUserByEmail(email) {
     return this.prismaService.client.User.findUnique({
       where: {
         email,
+      },
+    });
+  }
+
+  async checkUsernameAndEmail(username, email) {
+    return this.prismaService.client.User.findMany({
+      where: {
+        OR: [
+          {
+            email,
+          },
+          {
+            username,
+          },
+        ],
       },
     });
   }

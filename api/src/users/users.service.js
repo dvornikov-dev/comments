@@ -13,7 +13,15 @@ export default class UserService {
   }
 
   async getUserByEmail(email) {
-    return this.userRepository.findByEmail(email);
+    return this.userRepository.getUserByEmail(email);
+  }
+
+  async checkUsernameAndEmail(username, email) {
+    const res = await this.userRepository.checkUsernameAndEmail(
+      username,
+      email,
+    );
+    return !!res;
   }
 
   async create({ username, email, homeUrl }) {
